@@ -1,0 +1,31 @@
+{
+  "supported_games": {
+    "Steam": {
+      "name": "Steam",
+      "api_url": "https://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v2/",
+      "api_key_required": true,
+      "endpoints": {
+        "user_stats": "/ISteamUserStats/GetUserStatsForGame/v2/",
+        "game_achievements": "/ISteamUserStats/GetGlobalAchievementPercentagesForApp/v0002/"
+      }
+    },
+    "XboxLive": {
+      "name": "Xbox Live",
+      "api_url": "https://xboxapi.com/v2/",
+      "api_key_required": true,
+      "endpoints": {
+        "user_profile": "/profile",
+        "user_achievements": "/achievements/{game_id}"
+      }
+    },
+    "PlayStationNetwork": {
+      "name": "PlayStation Network",
+      "api_url": "https://psnapi.com/v1/",
+      "api_key_required": true,
+      "endpoints": {
+        "user_trophies": "/user/trophies",
+        "game_trophies": "/game/{game_id}/trophies"
+      }
+    }
+  }
+}
