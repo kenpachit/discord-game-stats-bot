@@ -1,1 +1,1 @@
-# discord-game-stats-bot
+A Discord bot designed to fetch and display game stats directly within your Discord server. It initializes the bot, sets up event listeners for user commands, and interacts with game APIs to retrieve real-time statistics, bringing gaming communities closer by enabling easy access to game performance metrics and statistics.
