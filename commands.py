@@ -16,41 +16,33 @@ game_stats = {
 
 supported_games = ['game1', 'game2']
 
+async def fetch_stats_from_api(game, players):
+    """
+    Placeholder function for fetching game stats from an external API.
+    Assume this function batches requests to fetch stats for multiple players in a single API call.
+    Modify to use actual API calls in your implementation.
+    """
+    api_response = {
+        'player1': {'game1': 150, 'game2': 200},
+        'player2': {'game1': 180, 'game2': 220}
+    }
+    return {player: api_response.get(player, {}).get(game) for player in players}
+
 @bot.event
 async def on_ready():
     print(f'{bot.user.name} has connected to Discord!')
-
-@lru_cache(maxsize=100)
-def get_player_game_stats(player, game):
-    return game_stats.get(player, {}).get(game)
 
 @bot.command(name='stats', help='Retrieves stats for the specified game. Usage: !stats <game_name> <player_name>')
 async def fetch_stats(ctx, game: str, player: str):
     if game in supported_games:
         player_stats = get_player_game_stats(player, game) # Using cached function
+        if player_stats is None:
+            player_stats = await fetch_stats_from_api(game, [player]).get(player)
         if player_stats:
             await ctx.send(f"{player}'s stats for {game}: {player_stats}")
         else:
             await ctx.send("Stats not found. Make sure the player name and game are correct.")
     else:
         await ctx.send(f"{game} is not supported. Use !games to list supported games.")
-
-@bot.command(name='compare', help='Compares stats between two players. Usage: !compare <game_name> <player1> <player2>')
-async def compare_stats(ctx, game: str, player1: str, player2: str):
-    if game in supported_games:
-        stats1 = get_player_game_stats(player1, game) # Using cached function
-        stats2 = get_player_game_stats(player2, game) # Using cached function
-        if stats1 and stats2:
-            comparison = "equal to" if stats1 == stats2 else "higher than" if stats1 > stats2 else "lower than"
-            await ctx.send(f"{player1}'s stats for {game} ({stats1}) are {comparison} {player2}'s ({stats2}).")
-        else:
-            await ctx.send("One or both players' stats not found.")
-    else:
-        await ctx.send(f"{game} is not supported. Use !games to list supported games.")
-
-@bot.command(name='games', help='Lists all supported games.')
-async def list_games(ctx):
-    games_list = ', '.join(supported_games)
-    await ctx.send(f"Supported games: {games_list}")
 
 bot.run(TOKEN)
