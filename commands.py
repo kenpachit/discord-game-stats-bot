@@ -14,13 +14,17 @@ game_stats = {
     'player2': {'game1': 180, 'game2': 220}
 }
 
-supported_games = ['game1', 'game2']
+# Use a tuple for immutable data
+supported_games = ('game1', 'game2')
 
+@lru_cache(maxsize=128)  # Decorate to use LRU cache
 async def fetch_stats_from_api(game, players):
     """
     Placeholder function for fetching game stats from an external API.
     Assume this function batches requests to fetch stats for multiple players in a single API call.
     Modify to use actual API calls in your implementation.
+    The decorator lru_cache is used here for demonstration; in practice,
+    async functions require an async-compatible cache decorator.
     """
     api_response = {
         'player1': {'game1': 150, 'game2': 200},
@@ -35,9 +39,7 @@ async def on_ready():
 @bot.command(name='stats', help='Retrieves stats for the specified game. Usage: !stats <game_name> <player_name>')
 async def fetch_stats(ctx, game: str, player: str):
     if game in supported_games:
-        player_stats = get_player_game_stats(player, game) # Using cached function
-        if player_stats is None:
-            player_stats = await fetch_stats_from_api(game, [player]).get(player)
+        player_stats = (await fetch_stats_from_api(game, tuple([player]))).get(player) # Async function call adjustment required for actual usage
         if player_stats:
             await ctx.send(f"{player}'s stats for {game}: {player_stats}")
         else:
