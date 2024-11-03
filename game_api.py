@@ -6,35 +6,29 @@ load_dotenv()
 
 class GameAPIManager:
     def __init__(self):
-        self.steam_api_key = os.getenv('STEAM_API_KEY')
-        self.xbox_api_key = os.getenv('XBOX_API_KEY')
-        self.ps_api_key = os.getenv('PS_API_KEY')
+        self.api_keys = {
+            'steam': os.getenv('STEAM_API_KEY'),
+            'xbox': os.getenv('XBOX_API_KEY'),
+            'ps': os.getenv('PS_API_KEY')
+        }
+
+    def _common_fetch(self, url, headers=None):
+        response = requests.get(url, headers=headers)
+        return response.json() if response.status_code == 200 else None
 
     def fetch_steam_game(self, appid):
-        base_url = f"http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key={self.steam_api_key}&appid={appid}"
-        response = requests.get(base_url)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return None
+        base_url = f"http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key={self.api_keys['steam']}&appid={appid}"
+        return self._common_fetch(base_url)
 
     def fetch_xbox_game(self, game_id):
-        headers = {'X-Authorization': self.xbox_api_key}
+        headers = {'X-Authorization': self.api_keys['xbox']}
         base_url = f"https://xboxapi.com/v2/game-details/{game_id}"
-        response = requests.get(base_url, headers=headers)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return None
+        return self._common_fetch(base_url, headers)
 
     def fetch_ps_game(self, game_id):
-        headers = {'Authorization': f'Bearer {self.ps_api_key}'}
+        headers = {'Authorization': f'Bearer {self.api_keys['ps']}'}
         base_url = f"https://psnapi.com/v1/games/{game_id}"
-        response = requests.get(base_url, headers=headers)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            return None
+        return self._common_fetch(base_url, headers)
 
 if __name__ == "__main__":
     game_manager = GameAPIManager()
